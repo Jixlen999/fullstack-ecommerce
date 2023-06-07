@@ -15,8 +15,11 @@ import {
   Text,
   Tooltip,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { addCartItem } from "../redux/actions/cartActions";
+import { useDispatch, useSelector } from "react-redux";
 
 const Rating = ({ rating, numberOfReviews }) => {
   const [iconSize, setIconSize] = useState("14px");
@@ -37,6 +40,29 @@ const Rating = ({ rating, numberOfReviews }) => {
 };
 
 const ProductCard = ({ product }) => {
+  const dispatch = useDispatch();
+  const toast = useToast();
+
+  const cartInfo = useSelector((state) => state.cart);
+  const { cart } = cartInfo;
+
+  const addItem = (id) => () => {
+    if (cart.some((cartItem) => cartItem.id === id)) {
+      toast({
+        description: "This item is already in your cart. Go to your cart to change the amount.",
+        status: "error",
+        isClosable: true,
+      });
+    } else {
+      dispatch(addCartItem(id, 1));
+      toast({
+        description: "Item has been added",
+        status: "success",
+        isClosable: true,
+      });
+    }
+  };
+
   return (
     <Stack
       p="2"
@@ -56,7 +82,7 @@ const ProductCard = ({ product }) => {
         <Circle size={"10px"} position={"absolute"} top={2} right={2} bg={"red.300"} />
       )}
       <Image src={product.image} alt={product.name} roundedTop={"lg"} />
-      <Box flex={"1"} naxH="5" alignItems={"baseline"}>
+      <Box flex={"1"} maxH="5" alignItems={"baseline"}>
         {product.stock <= 0 && (
           <Badge rounded={"full"} px={"2"} fontSize={"0.8em"} colorScheme="red">
             Sold out
@@ -92,7 +118,12 @@ const ProductCard = ({ product }) => {
           color={"gray.800"}
           fontSize={"1.2em"}
         >
-          <Button variant={"ghost"} display={"flex"} isDisabled={product.stock <= 0}>
+          <Button
+            onClick={addItem(product._id)}
+            variant={"ghost"}
+            display={"flex"}
+            isDisabled={product.stock <= 0}
+          >
             <Icon as={FiShoppingCart} h={7} w={7} alignSelf={"center"} />
           </Button>
         </Tooltip>
