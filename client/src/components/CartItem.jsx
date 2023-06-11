@@ -3,6 +3,7 @@ import {
   CloseButton,
   Flex,
   Image,
+  Link,
   Select,
   Stack,
   Text,
@@ -10,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
 import { addCartItem, removeCartItem } from "../redux/actions/cartActions";
+import { Link as ReactLink } from "react-router-dom";
 
 const CartItem = ({ cartItem }) => {
   const { name, image, price, stock, qty, id } = cartItem;
@@ -36,7 +38,9 @@ const CartItem = ({ cartItem }) => {
         />
         <Box pt={"4"}>
           <Stack spacing={"0.5"}>
-            <Text fontWeight={"medium"}>{name}</Text>
+            <Link as={ReactLink} to={`/product/${id}`} pt={"2"} cursor={"pointer"}>
+              <Text fontWeight={"medium"}>{name}</Text>
+            </Link>
           </Stack>
         </Box>
       </Stack>
